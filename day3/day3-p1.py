@@ -59,5 +59,10 @@ def main():
             distance = min(distance, new_dis)
     print('Min Distance')
     print(distance)
-
+# There is another way to parse the input and generate the line as the
+# format of (x-axis or y-axis; position related to x/y axis; values).
+# Because the line is either lined up with X or Y axis, the complexity to
+# find the intersection of lines should be decreased log2 if we assume the
+# lines are distrubted uniformed on the panel. And also, find intersection 
+# between two lines along with X or Y should be simplied problem than generic case.
 main()
