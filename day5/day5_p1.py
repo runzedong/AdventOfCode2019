@@ -16,6 +16,12 @@ def read_para_value(codes, mode, pointer):
         print("Unknown parameter mode: " + str(mode))
         return None
 
+def yield_user_input(inputs):
+    i = 0
+    while i < len(inputs):
+        yield inputs[i]
+        i += 1
+
 def yield_para_mode(modes):
     while True:
         yield modes % 10
@@ -46,7 +52,7 @@ def exec_calc(codes, pointer, val1, val2, op_code):
         print("Unknown mode: " + str(op_code))
         return None
 
-def int_code_program(codes, input_val):
+def int_code_program(codes, input_generator):
     instrct_pointer = 0
     while instrct_pointer < len(codes):
         instrcts = codes[instrct_pointer]
@@ -78,7 +84,7 @@ def int_code_program(codes, input_val):
         elif opcode == INPUT_CODE:
             # input can only be position mode
             instrct_pointer += 1
-            exec_input(codes, instrct_pointer, input_val)
+            exec_input(codes, instrct_pointer, next(input_generator))
         elif opcode == OUTPUT_CODE:
             mode = instrcts // 100
             instrct_pointer += 1
@@ -96,9 +102,10 @@ def main():
     f.close()
     # based on the problem, init input value = 1
     init_input_val = 1
+    user_input_generator = yield_user_input([init_input_val])
     # start to process
     print("Start code")
-    int_code_program(codes, init_input_val)
+    int_code_program(codes, user_input_generator)
     print("Finish code")
 
 main()
