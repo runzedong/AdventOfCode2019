@@ -33,9 +33,9 @@ def yield_user_input(inputs):
 
 def exec_output(codes, mode, pointer):
     if mode == POSITION_MODE:
-        return str(codes[codes[pointer]])
+        return codes[codes[pointer]]
     elif mode == IMMEDIATE_MODE:
-        return str(codes[pointer])
+        return codes[pointer]
     else:
         # unknown parameter mode
         print("Unknown mode: " + str(mode))
@@ -105,7 +105,6 @@ def int_code_program(codes, input_generator):
             mode = instrcts // 100
             instrct_pointer += 1
             result = exec_output(codes, mode, instrct_pointer)
-            print("Output: " + result)
             output.append(result)
         elif opcode == JUMP_IF_TRUE:
             # check second para if != 0
@@ -156,29 +155,31 @@ def int_code_program(codes, input_generator):
             instrct_pointer += 1
     return output
 
-def get_amplifier_output(phase, input):
+def get_amplifier_output(phase, input_signal):
     # load codes· program
     f = open('input.txt', 'r')
     codes = list(map(lambda x: int(x), f.read().split(',')))
     f.close()
-    input_generator = yield_user_input([phase, input])
+    input_generator = yield_user_input([phase, input_signal])
     return int_code_program(codes, input_generator)
 
 def calculate_thruster_output(phase_settings):
     INIT_INPUT = 0
     AMP_OUTPUT = None
+    print(phase_settings)
     for phase in phase_settings:
-        print('Phase: ' + str(phase))
         if AMP_OUTPUT is None:
             AMP_OUTPUT = get_amplifier_output(phase, INIT_INPUT)[0]
         else:
             AMP_OUTPUT = get_amplifier_output(phase, AMP_OUTPUT)[0]
+    print('Amp Output: ' + str(AMP_OUTPUT))
     return AMP_OUTPUT
 
 def main():
     MIN_PHASE = 0
     MAX_PHASE = 4
     max_thruster_output = None
+    max_phase_settings = None
     print('Find the max thruster output')
     for a in range(5):
         for b in range(5):
@@ -188,10 +189,16 @@ def main():
                         new_output = calculate_thruster_output([a, b, c, d, e])
                         if max_thruster_output is None:
                             max_thruster_output = new_output
+                            max_phase_settings = [a, b, c, d, e]
                         else:
+                            if new_output > max_thruster_output:
+                                max_phase_settings = [a, b, c, d, e]
                             max_thruster_output = max(max_thruster_output, new_output)
+
     print('Done.')
     print(max_thruster_output)
+    print(max_phase_settings)
+    print(calculate_thruster_output(max_phase_settings))
 
 if __name__ == "__main__":
     main()
